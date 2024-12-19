@@ -1,0 +1,9 @@
+---
+- block:
+
+  - name: restart vnstat_exporter
+    systemd:
+      name: vnstat_exporter
+      state: restarted
+
+  become_user: root
