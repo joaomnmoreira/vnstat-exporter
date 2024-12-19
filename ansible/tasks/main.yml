@@ -1,0 +1,7 @@
+---
+- block:
+
+  - import_tasks: 0-ansible-facts.yml
+  - import_tasks: 1-tasks.yml
+
+  become_user: root
