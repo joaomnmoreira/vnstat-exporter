@@ -1,0 +1,10 @@
+- block:
+
+  - name: Ensure ansible_facts since their not available when template is run with tags
+    setup:
+
+  # - name: Print all available facts
+  #   ansible.builtin.debug:
+  #     var: ansible_facts
+ 
+  become_user: root
