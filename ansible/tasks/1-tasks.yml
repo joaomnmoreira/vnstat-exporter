@@ -1,0 +1,77 @@
+---
+- block:
+
+  - name: Ensure vnstat is installed
+    apt:
+      name: vnstat
+      state: present
+      update_cache: yes
+
+  - name: Install required Python packages
+    apt:
+      name:
+        - python3
+        - python3-pip      
+      state: present
+
+  - name: Install Python dependencies
+    pip:
+      name: "{{ python_packages }}"
+      state: present
+
+  - name: Create vnstat_exporter group
+    group:
+      name: "{{ exporter_group }}"
+      state: present
+
+  - name: Create vnstat_exporter user
+    user:
+      name: "{{ exporter_user }}"
+      group: "{{ exporter_group }}"
+      system: yes
+      shell: /sbin/nologin
+      create_home: no
+
+  - name: Add vnstat_exporter user to vnstat group
+    user:
+      name: "{{ exporter_user }}"
+      groups: vnstat
+      append: yes
+
+  - name: Create exporter directory
+    file:
+      path: /usr/local/bin/vnstat_exporter
+      state: directory
+      owner: "{{ exporter_user }}"
+      group: "{{ exporter_group }}"
+      mode: '0755'
+
+  - name: Copy vnstat exporter script
+    copy:
+      src: files/vnstat_exporter.py
+      dest: /usr/local/bin/vnstat_exporter/vnstat_exporter.py
+      owner: "{{ exporter_user }}"
+      group: "{{ exporter_group }}"
+      mode: '0755'
+
+  - name: Install systemd service
+    template:
+      src: templates/vnstat_exporter.service.j2
+      dest: /etc/systemd/system/vnstat_exporter.service
+      mode: '0644'
+    notify: restart vnstat_exporter
+
+  - name: Enable and start vnstat service
+    systemd:
+      name: vnstat
+      state: started
+      enabled: yes
+
+  - name: Enable and start vnstat_exporter service
+    systemd:
+      name: vnstat_exporter
+      state: started
+      enabled: yes
+      daemon_reload: yes
+
+  become_user: root
