@@ -1,0 +1,29 @@
+[Unit]
+Description=VNStat Prometheus Exporter
+After=network.target vnstat.service
+Wants=vnstat.service
+
+[Service]
+Type=simple
+User={{ exporter_user }}
+Group={{ exporter_group }}
+ExecStart=/usr/local/bin/vnstat_exporter/vnstat_exporter.py --port {{ exporter_port }}
+Restart=always
+RestartSec=30s
+
+# Logging configuration
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vnstat_exporter
+
+# Additional hardening
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Ensure proper file permissions
+UMask=0022
+
+[Install]
+WantedBy=multi-user.target
