@@ -1,0 +1,8 @@
+---
+exporter_port: 9469
+exporter_version: "1.0.0"
+exporter_user: vnstat_exporter
+exporter_group: vnstat_exporter
+python_packages:
+  - prometheus_client
+  - pip
